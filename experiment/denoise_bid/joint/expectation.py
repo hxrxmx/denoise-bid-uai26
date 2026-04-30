@@ -10,7 +10,7 @@ def ctr_expectation(
     sigma_cvr,
     weights,
     means,
-    sigmas
+    sigmas,
 ):
     zeta_hat = np.stack([ctr_logits, cvr_logits], axis=1)
     theta_00 = sigma_ctr**2

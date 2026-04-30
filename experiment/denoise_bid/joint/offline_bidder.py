@@ -53,6 +53,7 @@ def denoise_bid(
         weights,
         means,
         sigmas,
+        config.algorithms.denoise_bid.joint.gh_approximation.n_quad_points,
     )
 
     p, q = solve_dual(config, ctr, value, wp, budget, target_cpc)

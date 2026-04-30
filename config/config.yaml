@@ -13,8 +13,6 @@ algorithms:
         tol_rel_gap: 1e-8
         tol_mu_red: 1e-8
     joint:
-      gh_approximation:
-        n_quad_points: 5
       xdgmm:
         max_iter: 300
         tol: 1e-4
@@ -23,6 +21,8 @@ algorithms:
         tol_dfeas: 1e-8
         tol_rel_gap: 1e-8
         tol_mu_red: 1e-8
+      gh_approximation:
+        n_quad_points: 5
 
   non_robust_bid:
     mosek:
