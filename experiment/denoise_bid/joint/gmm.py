@@ -3,6 +3,7 @@ from astroML.density_estimation import XDGMM
 
 
 def fit_gmm(
+    config,
     ctr_logits,
     cvr_logits,
     ctr_logit_sigmas,
@@ -18,7 +19,11 @@ def fit_gmm(
     Xerr[:, 0, 0] = ctr_logit_variances.clip(1e-12, np.inf)
     Xerr[:, 1, 1] = cvr_logit_variances.clip(1e-12, np.inf)
 
-    xdgmm = XDGMM(n_components=n_components, max_iter=300, tol=1e-4)
+    xdgmm = XDGMM(
+        n_components=n_components,
+        max_iter=config.xdgmm.max_iter,
+        tol=config.xdgmm.tol,
+    )
     xdgmm.fit(X, Xerr)
 
     return xdgmm.alpha, xdgmm.mu, xdgmm.V

@@ -2,7 +2,7 @@ import cvxpy as cp
 import numpy as np
 
 
-def solve_dual(ctr, cvr, wp, budget, target_cpc, epsilon):
+def solve_dual(config, ctr, cvr, wp, budget, target_cpc, epsilon):
     alpha = np.sqrt(2 * epsilon)
     num_auctions = len(ctr)
 
@@ -31,10 +31,10 @@ def solve_dual(ctr, cvr, wp, budget, target_cpc, epsilon):
     prob.solve(
         solver=cp.MOSEK,
         mosek_params={
-            "MSK_DPAR_INTPNT_CO_TOL_PFEAS": 1e-6,
-            "MSK_DPAR_INTPNT_CO_TOL_DFEAS": 1e-6,
-            "MSK_DPAR_INTPNT_CO_TOL_REL_GAP": 1e-6,
-            "MSK_DPAR_INTPNT_CO_TOL_MU_RED": 1e-6,
+            "MSK_DPAR_INTPNT_CO_TOL_PFEAS": config.mosek.tol_pfeas,
+            "MSK_DPAR_INTPNT_CO_TOL_DFEAS": config.mosek.tol_dfeas,
+            "MSK_DPAR_INTPNT_CO_TOL_REL_GAP": config.mosek.tol_rel_gap,
+            "MSK_DPAR_INTPNT_CO_TOL_MU_RED": config.mosek.tol_mu_red,
         }
     )
 

@@ -6,6 +6,7 @@ from experiment.utils.utils import sigmoid
 
 
 def robust_bid(
+    config,
     ctr_logit,
     cvr_logit,
     sigma_ctr,
@@ -14,8 +15,9 @@ def robust_bid(
     budget,
     target_cpc,
     epsilon=None,
-    robust_k=3,
 ):
+    robust_k = config.k_sigmas
+
     if epsilon is None:
         epsilon = np.sum(
             (
@@ -25,6 +27,6 @@ def robust_bid(
         ) / 2
     ctr = sigmoid(ctr_logit)
     cvr = sigmoid(cvr_logit)
-    p, q, delta, u = solve_dual(ctr, cvr, wp, budget, target_cpc, epsilon)
+    p, q, delta, u = solve_dual(config, ctr, cvr, wp, budget, target_cpc, epsilon)
 
     return bids(ctr, cvr, p, q, u, delta, target_cpc, epsilon)

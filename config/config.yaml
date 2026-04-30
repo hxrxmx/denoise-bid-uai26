@@ -1,0 +1,41 @@
+# Общие настройки
+common:
+  seed: 42
+
+algorithms:
+  denoise_bid:
+    ctr_only:
+      xdgmm:
+        max_iter: 300
+        tol: 1e-4
+      mosek:
+        tol_pfeas: 1e-8
+        tol_dfeas: 1e-8
+        tol_rel_gap: 1e-8
+        tol_mu_red: 1e-8
+    joint:
+      gh_approximation:
+        n_quad_points: 5
+      xdgmm:
+        max_iter: 300
+        tol: 1e-4
+      mosek:
+        tol_pfeas: 1e-8
+        tol_dfeas: 1e-8
+        tol_rel_gap: 1e-8
+        tol_mu_red: 1e-8
+
+  non_robust_bid:
+    mosek:
+      tol_pfeas: 1e-8
+      tol_dfeas: 1e-8
+      tol_rel_gap: 1e-8
+      tol_mu_red: 1e-8
+
+  robust_bid:
+    k_sigmas: 3
+    mosek:
+      tol_pfeas: 1e-8
+      tol_dfeas: 1e-8
+      tol_rel_gap: 1e-8
+      tol_mu_red: 1e-8

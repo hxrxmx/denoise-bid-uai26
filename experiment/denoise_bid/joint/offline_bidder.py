@@ -8,6 +8,7 @@ from experiment.denoise_bid.joint.bid import bids
 
 
 def denoise_bid(
+    config,
     ctr_logit,
     cvr_logit,
     sigma_ctr,
@@ -27,6 +28,7 @@ def denoise_bid(
     ctr_gmm_sigma = sigma_ctr[indexes]
     cvr_gmm_sigma = sigma_cvr[indexes]
     weights, means, sigmas = fit_gmm(
+        config,
         ctr_gmm_logit,
         cvr_gmm_logit,
         ctr_gmm_sigma,
@@ -53,5 +55,5 @@ def denoise_bid(
         sigmas,
     )
 
-    p, q = solve_dual(ctr, value, wp, budget, target_cpc)
+    p, q = solve_dual(config, ctr, value, wp, budget, target_cpc)
     return bids(ctr, value, p, q, target_cpc)
