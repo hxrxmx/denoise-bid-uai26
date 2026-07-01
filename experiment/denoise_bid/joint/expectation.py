@@ -91,6 +91,7 @@ def value_expectation(
     means,
     sigmas,
     n_quad_points=5,
+    herm_gaus_points=None,
 ):
     ctr_logit_var = ctr_sigma**2
     cvr_logit_var = cvr_sigma**2
@@ -129,7 +130,7 @@ def value_expectation(
 
     Sigma_post = Sigma_prior - np.einsum('nkij,nkjl->nkil', W, Sigma_prior)
 
-    base_points, base_weights = np.polynomial.hermite.hermgauss(n_quad_points)
+    base_points, base_weights = herm_gaus_points if herm_gaus_points is not None else np.polynomial.hermite.hermgauss(n_quad_points)
 
     grid_x, grid_y = np.meshgrid(base_points, base_points)
     grid_points_flat = np.vstack([grid_x.ravel(), grid_y.ravel()])

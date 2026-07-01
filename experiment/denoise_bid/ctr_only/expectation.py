@@ -1,5 +1,6 @@
 import numpy as np
 from experiment.utils.utils import sigmoid
+from scipy.special import expit
 
 
 def ctr_expectation(
@@ -9,33 +10,30 @@ def ctr_expectation(
     ctr_means,
     ctr_sigmas,
 ):
-    ctr_exp = np.zeros_like(ctr_logit)
+    L = ctr_logit[:, np.newaxis]
+    S2 = ctr_logit_sigma[:, np.newaxis]**2
+    
+    W = ctr_weights[np.newaxis, :]
+    M = ctr_means[np.newaxis, :]
+    SI2 = ctr_sigmas[np.newaxis, :]**2
 
-    for i, (logit, sigma) in enumerate(
-        zip(ctr_logit, ctr_logit_sigma)
-    ):
-        numerator = 0.0
-        denominator = 0.0
+    sum_S2 = S2 + SI2
+    
+    inv_S2 = 1.0 / S2
+    inv_SI2 = 1.0 / SI2
+    sum_inv = inv_S2 + inv_SI2
 
-        for w_i, mu_i, sigma_i in zip(ctr_weights, ctr_means, ctr_sigmas):
-            mu_eff = (logit / sigma ** 2 + mu_i / sigma_i ** 2) / \
-                (1 / sigma**2 + 1 / sigma_i ** 2)
-            sigma_sq_eff = 1 / (1 / sigma**2 + 1 / sigma_i**2)
-            multiplier = np.exp(
-                -(logit - mu_i)**2 / (2 * (sigma**2 + sigma_i**2))
-            )
+    mu_eff = (L * inv_S2 + M * inv_SI2) / sum_inv
+    sigma_sq_eff = 1.0 / sum_inv
 
-            denom_term = (
-                w_i * multiplier
-                / np.sqrt(sigma**2 + sigma_i**2)
-            )
+    multiplier = np.exp(-0.5 * (L - M)**2 / sum_S2)
+    denom_term = (W * multiplier) / np.sqrt(sum_S2)
 
-            sigmoid_int_approximation = sigmoid(
-                mu_eff / (np.sqrt(1 + np.pi / 8 * sigma_sq_eff))
-            )
+    sigmoid_int_approx = expit(
+        mu_eff / np.sqrt(1 + (np.pi / 8) * sigma_sq_eff)
+    )
 
-            denominator += denom_term
-            numerator += denom_term * sigmoid_int_approximation
-
-        ctr_exp[i] = numerator / (denominator + 1e-10)
-    return ctr_exp
+    numerator = np.sum(denom_term * sigmoid_int_approx, axis=1)
+    denominator = np.sum(denom_term, axis=1)
+    
+    return numerator / (denominator + 1e-10)
