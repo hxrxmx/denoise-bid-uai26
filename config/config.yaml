@@ -38,3 +38,10 @@ algorithms:
       tol_dfeas: 1e-8
       tol_rel_gap: 1e-8
       tol_mu_red: 1e-8
+
+  risk_bid:
+    mosek:
+      tol_pfeas: 1e-8
+      tol_dfeas: 1e-8
+      tol_rel_gap: 1e-8
+      tol_mu_red: 1e-8
