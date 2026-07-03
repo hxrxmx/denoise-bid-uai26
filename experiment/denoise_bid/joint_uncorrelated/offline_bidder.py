@@ -1,13 +1,12 @@
 import numpy as np
 
-from experiment.denoise_bid.joint.expectation \
-    import ctr_expectation, value_expectation
-from experiment.denoise_bid.joint.lp import solve_dual
-from experiment.denoise_bid.joint.gmm import fit_gmm
-from experiment.denoise_bid.joint.bid import bids
+from experiment.denoise_bid.ctr_only.gmm import fit_gmm
+from experiment.denoise_bid.ctr_only.expectation import ctr_expectation
+from experiment.denoise_bid.ctr_only.lp import solve_dual
+from experiment.denoise_bid.ctr_only.bid import bids
 
 
-def denoise_bid(
+def uncorrelated_denoise_bid(
     config,
     ctr_logit,
     cvr_logit,
@@ -20,41 +19,42 @@ def denoise_bid(
 ):
     indexes = np.random.choice(
         len(ctr_logit),
-        size=200 * n_components,
+        size=100 * n_components,
         replace=False
     )
     ctr_gmm_logit = ctr_logit[indexes]
     cvr_gmm_logit = cvr_logit[indexes]
     ctr_gmm_sigma = sigma_ctr[indexes]
     cvr_gmm_sigma = sigma_cvr[indexes]
+
     weights, means, sigmas = fit_gmm(
         config,
         ctr_gmm_logit,
-        cvr_gmm_logit,
         ctr_gmm_sigma,
+        n_components,
+    )
+    ctr = ctr_expectation(
+        ctr_logit,
+        sigma_ctr,
+        weights,
+        means,
+        sigmas,
+    )
+
+    weights, means, sigmas = fit_gmm(
+        config,
+        cvr_gmm_logit,
         cvr_gmm_sigma,
         n_components,
     )
-
-    ctr = ctr_expectation(
-        ctr_logit,
+    cvr = ctr_expectation(
         cvr_logit,
-        sigma_ctr,
         sigma_cvr,
         weights,
         means,
         sigmas,
     )
-    value = value_expectation(
-        ctr_logit,
-        cvr_logit,
-        sigma_ctr,
-        sigma_cvr,
-        weights,
-        means,
-        sigmas,
-        config.gh_approximation.n_quad_points,
-    )
 
-    p, q = solve_dual(config, ctr, value, wp, budget, target_cpc)
-    return bids(ctr, value, p, q, target_cpc)
+    p, q = solve_dual(config, ctr, cvr, wp, budget, target_cpc)
+    bids_res = bids(ctr, cvr * ctr, p, q, target_cpc)
+    return bids_res

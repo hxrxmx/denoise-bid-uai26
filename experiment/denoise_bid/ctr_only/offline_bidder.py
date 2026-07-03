@@ -20,7 +20,7 @@ def denoise_bid(
 ):
     indexes = np.random.choice(
         len(ctr_logit),
-        size=200 * n_components,
+        size=100 * n_components,
         replace=False,
     )
     ctr_gmm_logit = ctr_logit[indexes]
