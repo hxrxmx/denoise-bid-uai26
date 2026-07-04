@@ -27,7 +27,7 @@ def uncorrelated_denoise_bid(
     ctr_gmm_sigma = sigma_ctr[indexes]
     cvr_gmm_sigma = sigma_cvr[indexes]
 
-    weights, means, sigmas = fit_gmm(
+    ctr_weights, ctr_means, ctr_sigmas = fit_gmm(
         config,
         ctr_gmm_logit,
         ctr_gmm_sigma,
@@ -36,12 +36,12 @@ def uncorrelated_denoise_bid(
     ctr = ctr_expectation(
         ctr_logit,
         sigma_ctr,
-        weights,
-        means,
-        sigmas,
+        ctr_weights,
+        ctr_means,
+        ctr_sigmas,
     )
 
-    weights, means, sigmas = fit_gmm(
+    cvr_weights, cvr_means, cvr_sigmas = fit_gmm(
         config,
         cvr_gmm_logit,
         cvr_gmm_sigma,
@@ -50,11 +50,11 @@ def uncorrelated_denoise_bid(
     cvr = ctr_expectation(
         cvr_logit,
         sigma_cvr,
-        weights,
-        means,
-        sigmas,
+        cvr_weights,
+        cvr_means,
+        cvr_sigmas,
     )
 
     p, q = solve_dual(config, ctr, cvr, wp, budget, target_cpc)
-    bids_res = bids(ctr, cvr * ctr, p, q, target_cpc)
+    bids_res = bids(ctr, cvr, p, q, target_cpc)
     return bids_res
